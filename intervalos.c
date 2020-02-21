@@ -19,12 +19,19 @@ int main(int argc, char const *argv[]) {
     double lambda = atoi(argv[1]);
     int n_samples = atoi(argv[2]);
 
-    srand ( time ( NULL));
+    srand(time(0));
     double long u = (double) rand()/RAND_MAX;
     
     double c = -(1-lambda)*log(u);
 
-    printf("lambda = %lf\n n_samples = %d\n u = %Lf\n c = %lf\n", lambda, n_samples, u, c);
+    int histograma[n_samples];
+    for(int i= 0; i<n_samples ; i++) {
+    	u = (double) rand()/RAND_MAX;
+    	double c = -(1-lambda)*log(u);
+	histograma[i] = c;
+    	printf("lambda = %lf\n n_samples = %d\n u = %Lf\n c = %lf\n", lambda, n_samples, u, c);
+
+    }
 
     return 1;
 }
