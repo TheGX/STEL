@@ -4,6 +4,7 @@
 #include <time.h>
 
 
+void printGraph(int histograma[25], int max);
 int main(int argc, char const *argv[]) {
     
     if(argc != 3){
@@ -13,30 +14,48 @@ int main(int argc, char const *argv[]) {
     double lambda = atof(argv[1]);
     int n_samples = atoi(argv[2]);
 
-    printf("lambda = %lf\n n_samples = %d\n", lambda, n_samples);
-    srand(time(0));
+    printf("lambda = %lf\nn_samples = %d\n", lambda, n_samples);
     double long u = (double) rand()/RAND_MAX;
     
-    double c = -(1/lambda)*log(u);
-	
     double delta = (0.2)*(1/lambda);
     double max_delta = 5 * (1/lambda);
     int histograma[25]={};
-	printf("delta = %lf\nmax_delta = %lf\n", delta, max_delta);
+    int max=0;
+    
+    printf("\ndelta = %lf\nmax_delta = %lf\n", delta, max_delta);
+    srand(time(0));
     for(int i= 0; i<n_samples ; i++) {
     	u = (double) rand()/RAND_MAX;
     	double c = -(1/lambda)*log(u);
 	for(int z = 0; z < 25; z++){
-			//printf("z = %d, z*delta = %d \n", z ,z*delta);
 		if(c >= z*delta && c < (z+1)*delta) {
 			histograma[z]++;
 		}
+		if(histograma[z] > max)
+			max = histograma[z]; 
 	}	
-    }
-	for(int z = 0; z < 25; z++){
-   	 printf("histograma[%d] = %d \n", z, histograma[z]);
-	}
-
+    }	
+    printGraph(histograma, max);
     return 1;
+}
+	
+
+void printGraph(int histograma[25], int max){
+    for(int height = max; height > 0; height--){
+	printf("%02d ", height);
+    	for(int z = 0; z < 25; z++){
+		if(histograma[z] >= height)
+			printf(" = ");
+		else printf("   ");
+   	}
+	printf("\n");
+    }
+
+    printf("x: ");	
+    for(int z = 0; z < 25; z++){
+	printf("%02d ", z);
+    }
+    printf("\n");
+
 }
 
