@@ -30,7 +30,8 @@ int main(int argc, char const *argv[]) {
 	for(int z = 0; z < 25; z++){
 		if(c >= z*delta && c < (z+1)*delta) {
 			histograma[z]++;
-		}
+		} if(z == 24 && c >= (z+1)*delta )
+			histograma[z]++;
 		if(histograma[z] > max)
 			max = histograma[z]; 
 	}	
