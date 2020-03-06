@@ -21,12 +21,14 @@ int main(int argc, char const *argv[]) {
     double max_delta = 5 * (1/lambda);
     int histograma[25]={};
     int max=0;
+    double total_c = 0;
     
     printf("\ndelta = %lf\nmax_delta = %lf\n", delta, max_delta);
     srand(time(0));
     for(int i= 0; i<n_samples ; i++) {
-    	u = (double) rand()/RAND_MAX;
+    	u = ((double) rand()+1)/RAND_MAX;
     	double c = -(1/lambda)*log(u);
+	total_c += c ;
 	for(int z = 0; z < 25; z++){
 		if(c >= z*delta && c < (z+1)*delta) {
 			histograma[z]++;
@@ -36,7 +38,9 @@ int main(int argc, char const *argv[]) {
 			max = histograma[z]; 
 	}	
     }	
+    total_c = total_c /(double) n_samples;
     printGraph(histograma, max);
+    printf("Estimador = %f\n", total_c);
     return 1;
 }
 	
