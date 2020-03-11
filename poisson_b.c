@@ -105,7 +105,7 @@ void printGraph(int histograma[25], int max){
 int arrivals(int lambda){
 
     double p = lambda*delta_t;
-    double i = (double) rand()/RAND_MAX;
+    double i = (double) (rand()+1)/RAND_MAX;
 
     if(i<p) return 1;
     else return 0;
