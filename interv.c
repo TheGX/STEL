@@ -1,5 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<math.h>
+#include<time.h>
 
 // Definição da estrutura da lista
 typedef struct{
@@ -8,6 +10,7 @@ typedef struct{
 	struct lista * proximo;
 } lista;
 
+void printGraph(int histograma[25], int max);
 
 // Função que remove o primeiro elemento da lista
 lista * remover (lista * apontador)
@@ -93,7 +96,8 @@ int main(int argc, char const *argv[]) {
     
     double delta = (0.2)*(1/lambda);
     double max_delta = 5 * (1/lambda);
-
+	
+    int histograma[25]={};
     int max=0;
     double total_c = 0;
     
@@ -102,27 +106,28 @@ int main(int argc, char const *argv[]) {
     for(int i= 0; i<n_samples ; i++) {
     	u = ((double) rand()+1)/RAND_MAX;
     	double c = -(1/lambda)*log(u);
-	adicionar(lista_eventos, 0, c);
+	total_c += c;
 
+	lista_eventos = adicionar(lista_eventos, 0, c);
+	for(int z = 0; z < 25; z++){
+		if(c >= z*delta && c < (z+1)*delta) {
+			histograma[z]++;
+		} if(z == 24 && c >= (z+1)*delta )
+			histograma[z]++;
+		if(histograma[z] > max)
+			max = histograma[z]; 
+	}	
     }	
+
+    imprimir(lista_eventos);
+    if(lista_eventos != NULL){
+	lista_eventos = remover(lista_eventos);
+	printf("\nEVENTO REMOVIDO\n");
+    }
     total_c = total_c /(double) n_samples;
     printf("Estimador = %f\n", total_c);
+    printGraph(histograma, max);
     return 1;
-	
-	printf("\nLISTA ACTUAL\n");
-	imprimir(lista_eventos);
-
-	if ( lista_eventos != NULL)
-	{
-		tipo_ev = lista_eventos -> tipo;
-		tempo_ev = lista_eventos -> tempo;
-		lista_eventos = remover(lista_eventos);
-		printf("\nEVENTO REMOVIDO\n");
-		printf("Tipo=%d\tTempo=%lf\n", tipo_ev, tempo_ev);
-	}
-	printf("\nLISTA ACTUAL\n");
-	imprimir(lista_eventos);
-
 }
 	
 
