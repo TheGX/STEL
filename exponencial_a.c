@@ -87,15 +87,17 @@ int main(int argc, char const *argv[]) {
     } 
     double lambda = atof(argv[1]);
     int n_samples = atoi(argv[2]);
-    lista  * lista_eventos;
-
+    lista  *lista_eventos = NULL;
+	// lista_eventos -> tempo = 0;
+	// lista_eventos -> proximo = 0;
+	// lista_eventos -> tipo = 0;
     double delta = (0.2)*(1/lambda);
     double max_delta = 5 * (1/lambda);
 	
     srand(time(0));
     int size = (max_delta/delta);
-    //int *histograma = (int *)calloc(size, sizeof(int));
-    int histograma[25] ={};
+    int *histograma = (int *)malloc(size*sizeof(int));
+    //int histograma[25] ={};
     int max=0;
     double total_c = 0; 
 
@@ -103,17 +105,17 @@ int main(int argc, char const *argv[]) {
     for(int i= 0; i<n_samples ; i++) {
     	double long u = ((double) rand()+1)/RAND_MAX;
     	double c = -(1/lambda)*log(u);
-	total_c += c;
+		total_c += c;
 
-	lista_eventos = adicionar(lista_eventos, 0, c);
-	for(int z = 0; z < size; z++){
-		if(c >= z*delta && c < (z+1)*delta) {
-			histograma[z]++;
-		} if(z == 24 && c >= (z+1)*delta )
-			histograma[z]++;
-		if(histograma[z] > max)
-			max = histograma[z];
-	}	
+		lista_eventos = adicionar(lista_eventos, 0, c);
+		for(int z = 0; z < size; z++){
+			if(c >= z*delta && c < (z+1)*delta) {
+				histograma[z]++;
+			} if(z == 24 && c >= (z+1)*delta )
+				histograma[z]++;
+			if(histograma[z] > max)
+				max = histograma[z];
+		}	
     }	
 
     imprimir(lista_eventos);
