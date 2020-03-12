@@ -176,7 +176,7 @@ int main(int argc, char const *argv[])
     }
 
     printGraph(histograma,max);
-    printf("Estimador de lambda: %f\n",   1/(total_count = total_count /(double) n_samples) );
+    printf("Estimador de 1/lambda: %f\n",   total_count = total_count /(double) n_samples);
 	/*lista_eventos = adicionar(lista_eventos, 1, 0.6);
 	lista_eventos = adicionar(lista_eventos, 0, 0.4);
 	lista_eventos = adicionar(lista_eventos, 1, 0.3);
