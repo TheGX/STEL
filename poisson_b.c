@@ -107,7 +107,7 @@ int arrivals(int lambda){
     double p = lambda*delta_t;
     double i = (double) (rand()+1)/RAND_MAX;
 
-    if(i<p) return 1;
+    if(i<p) return 1; // houve arrival
     else return 0;
 
 } 
@@ -118,21 +118,11 @@ int main(int argc, char const *argv[])
 	int tipo_ev; double tempo_ev;
 	lista_eventos = NULL;
     int tempo_total=0;
-    srand(time(0));
-
-
     double lambda = atof(argv[1]);
     int n_samples = atoi(argv[2]);
     double u=0;
     int aux=0;
     int count=0;
-
-    if(argc != 3){
-        printf("Usage ./intervalos LAMBDA N_SAMPLES\n");
-        return 0;
-    } 
-    
-    printf("lambda = %lf\nn_samples = %d\n", lambda, n_samples);
 
     //histogram stuff    
     double delta = (0.2)*(1/lambda);
@@ -141,7 +131,16 @@ int main(int argc, char const *argv[])
     int max=0;
     double total_count = 0;
     
+    if(argc != 3){
+        printf("Usage ./intervalos LAMBDA N_SAMPLES\n");
+        return 0;
+    } 
+    
+    printf("lambda = %lf\nn_samples = %d\n", lambda, n_samples);
     printf("\ndelta = %lf\nmax_delta = %lf\n", delta, max_delta);
+
+    srand(time(0));
+
 
     for(int i= 0; i<n_samples ; i++) {
 
@@ -153,7 +152,7 @@ int main(int argc, char const *argv[])
         aux=0;
         count=0;
 
-        while( aux == 0){
+        while( aux == 0){ // enquanto nao houver chamada passa-se para o time-slot seguinte
 
             aux=arrivals(lambda);
             count++;
@@ -161,14 +160,14 @@ int main(int argc, char const *argv[])
         }
 
         total_count=total_count+count*delta_t;
+
         for(int z = 0; z < 25; z++){
-		if(count*delta_t >= z*delta && count*delta_t < (z+1)*delta) {
+		    if(count*delta_t >= z*delta && count*delta_t < (z+1)*delta) {
+			    histograma[z]++;
+		    } if(z == 24 && count*delta_t >= (z+1)*delta )
 			histograma[z]++;
-		} if(z == 24 && count*delta_t >= (z+1)*delta )
-			histograma[z]++;
-		if(histograma[z] > max)
-			max = histograma[z]; 
-	}	
+		    if(histograma[z] > max) max = histograma[z]; 
+	    }	
 
         lista_eventos=adicionar(lista_eventos, 0, delta_t*count);
         imprimir(lista_eventos);
