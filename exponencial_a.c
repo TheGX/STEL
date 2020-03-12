@@ -88,34 +88,31 @@ int main(int argc, char const *argv[]) {
     double lambda = atof(argv[1]);
     int n_samples = atoi(argv[2]);
     lista  * lista_eventos;
-    int tipo_ev; 
-    double tempo_ev;
 
-    printf("lambda = %lf\nn_samples = %d\n", lambda, n_samples);
-    double long u = (double) rand()/RAND_MAX;
-    
     double delta = (0.2)*(1/lambda);
     double max_delta = 5 * (1/lambda);
 	
-    int histograma[25]={};
+    srand(time(0));
+    int size = (max_delta/delta);
+    //int *histograma = (int *)calloc(size, sizeof(int));
+    int histograma[25] ={};
     int max=0;
-    double total_c = 0;
-    
-    printf("\ndelta = %lf\nmax_delta = %lf\n", delta, max_delta);
+    double total_c = 0; 
+
     srand(time(0));
     for(int i= 0; i<n_samples ; i++) {
-    	u = ((double) rand()+1)/RAND_MAX;
+    	double long u = ((double) rand()+1)/RAND_MAX;
     	double c = -(1/lambda)*log(u);
 	total_c += c;
 
 	lista_eventos = adicionar(lista_eventos, 0, c);
-	for(int z = 0; z < 25; z++){
+	for(int z = 0; z < size; z++){
 		if(c >= z*delta && c < (z+1)*delta) {
 			histograma[z]++;
 		} if(z == 24 && c >= (z+1)*delta )
 			histograma[z]++;
 		if(histograma[z] > max)
-			max = histograma[z]; 
+			max = histograma[z];
 	}	
     }	
 
@@ -127,6 +124,7 @@ int main(int argc, char const *argv[]) {
     total_c = total_c /(double) n_samples;
     printf("Estimador = %f\n", total_c);
     printGraph(histograma, max);
+    printf("lambda = %lf\nn_samples = %d\ndelta = %lf\nmax_delta = %lf\nHistogram size =%d\n", lambda, n_samples, delta, max_delta, size);
     return 1;
 }
 	
