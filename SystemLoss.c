@@ -2,85 +2,12 @@
 #include<stdlib.h>
 #include<math.h>
 #include<time.h>
+#include"prototipo.c"
 
 #define	lambda 200.0f
 #define	dm 0.008f
-
-// Definição da estrutura da lista
-typedef struct{
-	int tipo;
-	double tempo;
-	struct lista * proximo;
-} lista;
-
-void printGraph(int histograma[25], int max);
-
-// Função que remove o primeiro elemento da lista
-lista * remover (lista * apontador)
-{
-	lista * lap = (lista *)apontador -> proximo;
-	free(apontador);
-	return lap;
-}
-
-// Função que adiciona novo elemento à lista, ordenando a mesma por tempo
-lista * adicionar (lista * apontador, int n_tipo, double n_tempo)
-{
-	lista * lap = apontador;
-	lista * ap_aux, * ap_next;
-	if(apontador == NULL)
-	{
-		apontador = (lista *) malloc(sizeof (lista));
-		apontador -> proximo = NULL;
-		apontador -> tipo = n_tipo;
-		apontador -> tempo = n_tempo;
-		return apontador;
-	}
-	else
-	{
-		if (apontador->tempo > n_tempo) {
-	        ap_aux = (lista *) malloc(sizeof (lista));
-	        ap_aux -> tipo = n_tipo;
-            ap_aux -> tempo = n_tempo;
-            ap_aux -> proximo = (struct lista *) apontador;
-            return ap_aux;
-	    }
-
-		ap_next = (lista *)apontador -> proximo;
-		while(apontador != NULL)
-		{
-			if((ap_next == NULL) || ((ap_next -> tempo) > n_tempo))
-				break;
-			apontador = (lista *)apontador -> proximo;
-			ap_next = (lista *)apontador -> proximo;
-		}
-		ap_aux = (lista *)apontador -> proximo;
-		apontador -> proximo = (struct lista *) malloc(sizeof (lista));
-		apontador = (lista *)apontador -> proximo;
-		if(ap_aux != NULL)
-			apontador -> proximo = (struct lista *)ap_aux;
-		else
-			apontador -> proximo = NULL;
-		apontador -> tipo = n_tipo;
-		apontador -> tempo = n_tempo;
-		return lap;
-	}
-}
-
-// Função que imprime no ecra todos os elementos da lista
-void imprimir (lista * apontador)
-{
-	if(apontador == NULL)
-		printf("Lista vazia!\n");
-	else
-	{
-		while(apontador != NULL)
-		{
-			printf("Tipo=%d\tTempo=%lf\n", apontador -> tipo, apontador -> tempo);
-			apontador = (lista *)apontador -> proximo;
-		}
-	}
-}
+#define	ARRIVAL 0
+#define	DEPARTURE 1
 
 int main(int argc, char const *argv[]) {
     
@@ -98,28 +25,30 @@ int main(int argc, char const *argv[]) {
     int size = (max_delta/delta);
     int *histograma = (int *)malloc(size*sizeof(int));
     int max=0, bussy=0, blocked=0;
-    double total_c = 0, d, current_time = 0; 
+    double total_c = 0, d=0, c = 0, current_time = 0; 
+	
+	int i=0;
+	while(i < n_samples) {
+    	if(i == 0) lista_eventos = adicionar(lista_eventos, ARRIVAL, 0);
 
-    srand(time(0));
-    for(int i= 0; i<n_samples ; i++) {
-    	double long u = ((double) rand()+1)/RAND_MAX;
-    	double c = -(1/lambda)*log(u);
-		total_c += c;
-
-		lista_eventos = adicionar(lista_eventos, 0, total_c);
 		if (lista_eventos->tipo == 1){
 			bussy--;
 		}else{
-			if(bussy < n_channels) {
+			i++;
+			double u = ((double) rand()+1)/RAND_MAX;
+    		c = -(1/lambda)*log(u);
+			total_c += c;
+			lista_eventos = adicionar(lista_eventos, ARRIVAL, lista_eventos->tempo + c);
+			if(bussy < n_channels) { //AVAILABLE RESOURCES
 				bussy++;
 				current_time = lista_eventos->tempo;
 				u = ((double) rand()+1)/RAND_MAX;
 				d = -dm*log(u);
-				lista_eventos = adicionar(lista_eventos, 1, current_time + d);
+				lista_eventos = adicionar(lista_eventos, DEPARTURE, current_time + d);
 			} else blocked++;
 		}
 		lista_eventos = remover(lista_eventos);
-		
+		//TODO: REMOVE THIS
 		for(int z = 0; z < size; z++){
 			if(c >= z*delta && c < (z+1)*delta) {
 				histograma[z]++;
@@ -129,8 +58,6 @@ int main(int argc, char const *argv[]) {
 				max = histograma[z];
 		}	
     }	
-
-    //imprimir(lista_eventos);
     total_c = total_c /(double) n_samples;
     printf("Estimador = %f\n", total_c);
     //printGraph(histograma, max);
