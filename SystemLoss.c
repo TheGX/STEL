@@ -23,8 +23,7 @@ int main(int argc, char const *argv[]) {
 	
     srand(time(0));
     int size = (max_delta/delta);
-    int *histograma = (int *)malloc(size*sizeof(int));
-    int max=0, bussy=0, blocked=0;
+    int bussy=0, blocked=0;
     double total_c = 0, d=0, c = 0, current_time = 0; 
 	
 	int i=0;
@@ -48,43 +47,11 @@ int main(int argc, char const *argv[]) {
 			} else blocked++;
 		}
 		lista_eventos = remover(lista_eventos);
-		//TODO: REMOVE THIS
-		for(int z = 0; z < size; z++){
-			if(c >= z*delta && c < (z+1)*delta) {
-				histograma[z]++;
-			} if(z == 24 && c >= (z+1)*delta )
-				histograma[z]++;
-			if(histograma[z] > max)
-				max = histograma[z];
-		}	
     }	
     total_c = total_c /(double) n_samples;
     printf("Estimador = %f\n", total_c);
-    //printGraph(histograma, max);
     printf("lambda = %lf\nn_samples = %d\ndelta = %lf\nmax_delta = %lf\nHistogram size =%d\n", lambda, n_samples, delta, max_delta, size);
     printf("Blocked: %lf%%\n",(double)blocked/n_samples *100);
 	return 1;
 }
-	
-
-void printGraph(int histograma[25], int max){
-    for(int height = max; height > 0; height--){
-	printf("%02d ", height);
-    	for(int z = 0; z < 25; z++){
-		if(histograma[z] >= height)
-			printf(" = ");
-		else printf("   ");
-   	}
-	printf("\n");
-    }
-
-    printf("x: ");	
-    for(int z = 0; z < 25; z++){
-	printf("%02d ", z);
-    }
-    printf("\n");
-
-}
-
-
 
