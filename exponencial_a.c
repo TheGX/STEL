@@ -147,7 +147,6 @@ void printGraph(int histograma[25], int max){
 	printf("%02d ", z);
     }
     printf("\n");
-
 }
 
 
