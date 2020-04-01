@@ -9,6 +9,7 @@
 #define	ARRIVAL 0
 #define	DEPARTURE 1
 
+double generate_event(int type);
 int main(int argc, char const *argv[]) {
     
     if(argc != 3){
@@ -36,21 +37,18 @@ int main(int argc, char const *argv[]) {
 			if(queue != NULL) { //RESOURCES WERE FREED AND THERES ELEMENTS IN THE QUEUE 
 				total_delay += (lista_eventos->tempo - queue->tempo);
 				bussy++;
-				u = ((double) rand()+1)/RAND_MAX;
-				d = -dm*log(u);
+				d = generate_event(DEPARTURE);
 				lista_eventos = adicionar(lista_eventos, DEPARTURE, lista_eventos->tempo + d);
 				queue = remover(queue);
 			}
 		}else{
 			i++;
-			u = ((double) rand()+1)/RAND_MAX;
-    			c = -(1/lambda)*log(u);
+			c = generate_event(ARRIVAL);
 			total_c += c;
 			lista_eventos = adicionar(lista_eventos, ARRIVAL, lista_eventos->tempo + c); //ADD THE NEXT ARRIVAL
 			if(bussy < n_channels) { //AVAILABLE RESOURCES
 				bussy++;
-				u = ((double) rand()+1)/RAND_MAX;
-				d = -dm*log(u);
+				d = generate_event(DEPARTURE);
 				lista_eventos = adicionar(lista_eventos, DEPARTURE,  lista_eventos->tempo + d);
 			} else {
 				delayed++;
@@ -63,8 +61,16 @@ int main(int argc, char const *argv[]) {
     printf("Estimador = %f\n", total_c);
     printf("lambda = %lf\nn_samples = %d\ndelta = %lf\nmax_delta = %lf\nHistogram size =%d\n", lambda, n_samples, delta, max_delta, size);
     printf("Avg Packets Delayed: 		%lf%%\n",(double)delayed/n_samples *100);
-    printf("Avg Delayed Time: 	 	%lf\n",(double)total_delay/delayed);
+    printf("Avg Delayed Time: 	 	%lf\n",(double)total_delay/n_samples);
 
     return 1;
 }
 
+double generate_event(int type){
+	double u = ((double) rand()+1)/RAND_MAX, r;
+
+	if(type == ARRIVAL) r = -(1/lambda)*log(u);
+	else r = -dm*log(u);
+
+	return r;
+}
