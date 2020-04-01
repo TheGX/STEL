@@ -63,7 +63,7 @@ int main(int argc, char const *argv[]) {
     printf("Estimador = %f\n", total_c);
     printf("lambda = %lf\nn_samples = %d\ndelta = %lf\nmax_delta = %lf\nHistogram size =%d\n", lambda, n_samples, delta, max_delta, size);
     printf("Avg Packets Delayed: 		%lf%%\n",(double)delayed/n_samples *100);
-    printf("Avg Delayed Time: 	 	%lf\n",(double)total_delay/n_samples);
+    printf("Avg Delayed Time: 	 	%lf\n",(double)total_delay/delayed);
 
     return 1;
 }
