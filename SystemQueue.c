@@ -11,6 +11,7 @@
 #define	DEPARTURE 1
 
 double generate_event(int type);
+int * histogram(double data, int size, int * histograma, double delta);
 int main(int argc, char const *argv[]) {
     
     if(argc != 3){
@@ -40,14 +41,8 @@ int main(int argc, char const *argv[]) {
 			if(queue != NULL) { 			//RESOURCES WERE FREED AND THERES ELEMENTS IN THE QUEUE 
 				delay = (lista_eventos->tempo - queue->tempo);
 				total_delay += delay;
-				for(int z = 0; z < size; z++){
-					if(delay >= z*delta && delay < (z+1)*delta) {
-						histograma[z]++;
-					} if(z == 24 && delay >= (z+1)*delta)
-						histograma[z]++;
-					if(histograma[z] > max)
-						max = histograma[z];
-				}	
+				histograma = histogram(delay, size, histograma, delta);
+				max = findmax(histograma, size);
 				bussy++;
 				d = generate_event(DEPARTURE);
 				lista_eventos = adicionar(lista_eventos, DEPARTURE, lista_eventos->tempo + d);
