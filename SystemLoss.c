@@ -12,17 +12,14 @@
 int main(int argc, char const *argv[]) {
     
     if(argc != 3){
-        printf("Usage ./intervalos N_Channels N_SAMPLES\n");
+        printf("Usage ./SystemLoss N_Channels N_SAMPLES\n");
         return 0;
     } 
     int n_channels = atoi(argv[1]);
     int n_samples = atoi(argv[2]);
     lista  *lista_eventos = NULL;
-    double delta = (0.2)*(1/lambda);
-    double max_delta = 5 * (1/lambda);
 	
     srand(time(0));
-    int size = (max_delta/delta);
     int bussy=0, blocked=0;
     double total_c = 0, d=0, c = 0, current_time = 0; 
 	
@@ -50,7 +47,7 @@ int main(int argc, char const *argv[]) {
     }	
     total_c = total_c /(double) n_samples;
     printf("Estimador = %f\n", total_c);
-    printf("lambda = %lf\nn_samples = %d\ndelta = %lf\nmax_delta = %lf\nHistogram size =%d\n", lambda, n_samples, delta, max_delta, size);
+    printf("lambda = %lf\nn_samples = %d\n", lambda, n_samples);
     printf("Blocked: %lf%%\n",(double)blocked/n_samples *100);
 	return 1;
 }
