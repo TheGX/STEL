@@ -16,12 +16,13 @@ void printGraph(int histograma[25], int size){
 	for(int height = max; height > 0; height--){
 		printf("%2d", height);
 		for(int z = 0; z < size; z++){
-			if(histograma[z] >= height) printf("  =   ");
+			if(z==0) printf("	");
+			else if(histograma[z] >= height) printf("  =   ");
 			else if(z!=0) printf("      ");
 		}
 		printf("\n");
 	}	 
-	printf("x: ");	
+	printf("x:	");	
 	for(int z = 0; z < 25; z++) printf("%.3f ", (1+z)*0.001);
 	printf("\ncount:");	
 	for(int z = 1; z < 25; z++) printf("%03d ", histograma[z]);
