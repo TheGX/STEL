@@ -23,9 +23,9 @@ void printGraph(int histograma[25], int size){
 		printf("\n");
 	}	 
 	printf("x:	");	
-	for(int z = 0; z < 25; z++) printf("%.3f ", (1+z)*0.001);
-	printf("\ncount:");	
-	for(int z = 1; z < 25; z++) printf("%03d ", histograma[z]);
+	for(int z = 0; z < 25; z++) printf("%.3f	", (1+z)*0.001);
+	printf("\ncount:	");	
+	for(int z = 1; z < 25; z++) printf("%03d	", histograma[z]);
 	
 	printf("\n");
 	printf("max:%d min:%d\n", max, min);
