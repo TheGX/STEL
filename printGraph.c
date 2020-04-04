@@ -7,26 +7,26 @@ int * histogram(double data, int size, int * histograma, double delta){
 	}
 	return histograma;
 }	
-void printGraph(int histograma[25], int max){
+void printGraph(int histograma[25], int size){
+	int max =0, min=99999; 
+	for(int z = 0; z < size; z++){
+		if(histograma[z] > max) max = histograma[z];
+		else if(histograma[z] !=0 && histograma[z] < min) min = histograma[z];
+	}
 	for(int height = max; height > 0; height--){
-		printf("%02d ", height);
-		for(int z = 0; z < 25; z++){
-			if(histograma[z] >= height) printf(" = ");
-			else printf("  ");
+		printf("%2d", height);
+		for(int z = 0; z < size; z++){
+			if(histograma[z] >= height) printf("  =   ");
+			else if(z!=0) printf("      ");
 		}
 		printf("\n");
 	}	 
 	printf("x: ");	
-	for(int z = 0; z < 25; z++) printf("%.3f ", z*0.001);
+	for(int z = 0; z < 25; z++) printf("%.3f ", (1+z)*0.001);
+	printf("count:");	
+	for(int z = 1; z < 25; z++) printf("%03d ", histograma[z]);
 	
 	printf("\n");
+	printf("max:%d min:%d\n", max, min);
 }
 
-int findmax(int *histograma, int size){
-	int max =0;
-	for(int z = 0; z < size; z++){
-		if(histograma[z] > max) max = histograma[z];
-	}
-
-	return max;
-}

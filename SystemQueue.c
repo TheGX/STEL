@@ -15,7 +15,7 @@ int * histogram(double data, int size, int * histograma, double delta);
 int main(int argc, char const *argv[]) {
     
     if(argc != 3){
-        printf("Usage ./intervalos N_Channels N_SAMPLES\n");
+        printf("Usage ./SystemQueue N_Channels N_SAMPLES\n");
         return 0;
     } 
     int n_channels = atoi(argv[1]);
@@ -32,7 +32,7 @@ int main(int argc, char const *argv[]) {
     int *histograma = (int *)malloc(size*sizeof(int));
     double delay=0; 
     
-    int i=0, max=0;
+    int i=0; 
 	while(i < n_samples) {
     		if(i == 0) lista_eventos = adicionar(lista_eventos, ARRIVAL, 0);
 
@@ -42,7 +42,6 @@ int main(int argc, char const *argv[]) {
 				delay = (lista_eventos->tempo - queue->tempo);
 				total_delay += delay;
 				histograma = histogram(delay, size, histograma, delta);
-				max = findmax(histograma, size);
 				bussy++;
 				d = generate_event(DEPARTURE);
 				lista_eventos = adicionar(lista_eventos, DEPARTURE, lista_eventos->tempo + d);
@@ -65,7 +64,7 @@ int main(int argc, char const *argv[]) {
 		lista_eventos = remover(lista_eventos);
     	}	
     total_c = total_c /(double) n_samples;
-    printGraph(histograma, max);
+    printGraph(histograma, size);
     printf("Estimador = %f\n", total_c);
     printf("lambda = %lf\nn_samples = %d\ndelta = %lf\nmax_delta = %lf\nHistogram size =%d\n", lambda, n_samples, delta, max_delta, size);
     printf("Avg Packets Delayed: 		%lf%%\n",(double)delayed/n_samples *100);
