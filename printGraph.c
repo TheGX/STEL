@@ -23,7 +23,7 @@ void printGraph(int histograma[25], int size){
 	}	 
 	printf("x: ");	
 	for(int z = 0; z < 25; z++) printf("%.3f ", (1+z)*0.001);
-	printf("count:");	
+	printf("\ncount:");	
 	for(int z = 1; z < 25; z++) printf("%03d ", histograma[z]);
 	
 	printf("\n");
