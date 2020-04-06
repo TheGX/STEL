@@ -15,7 +15,7 @@ int * histogram(double data, int size, int * histograma, double delta);
 int main(int argc, char const *argv[]) {
     
     if(argc != 4){
-        printf("Usage ./intervalos N_Channels N_SAMPLES	Queue_Lenght\n");
+        printf("Usage ./FiniteQueue N_Channels N_SAMPLES Queue_Lenght\n");
         return 0;
     } 
     int n_channels = 	atoi(argv[1]);
@@ -35,42 +35,41 @@ int main(int argc, char const *argv[]) {
     double delay=0; 
     
     int i=0; 
-	while(i < n_samples) {
-    		if(i == 0) lista_eventos = adicionar(lista_eventos, ARRIVAL, 0);
+    while(i < n_samples) {
+    	if(i == 0) lista_eventos = adicionar(lista_eventos, ARRIVAL, 0);
 
-		if (lista_eventos->tipo == DEPARTURE){
-			bussy--;
-			if(queue != NULL) { 			//RESOURCES WERE FREED AND THERES ELEMENTS IN THE QUEUE 
-				delay = (lista_eventos->tempo - queue->tempo);
-				total_delay += delay;
-				histograma = histogram(delay, size, histograma, delta);
-				bussy++;
-				d = generate_event(DEPARTURE);
-				lista_eventos = adicionar(lista_eventos, DEPARTURE, lista_eventos->tempo + d);
-				queue = remover(queue);
-				lenght--;
-			}
-		}else{
-			i++;
-			c = generate_event(ARRIVAL);
-			total_c += c;
-			lista_eventos = adicionar(lista_eventos, ARRIVAL, lista_eventos->tempo + c); //ADD THE NEXT ARRIVAL
-			if(bussy < n_channels) { 				//AVAILABLE RESOURCES
-				bussy++;
-				d = generate_event(DEPARTURE);
-				lista_eventos = adicionar(lista_eventos, DEPARTURE,  lista_eventos->tempo + d);
-			} else if(lenght < capacity){		//CHECK IF QUEUE IF FULL
-				delayed++;
-				lenght++;
-				queue = adicionar(queue, ARRIVAL, lista_eventos->tempo);	//ADD DELAYED ELEMENT TO QUEUE WITH TIME OF ARRIVAL
-			} else blocked++;
+	if (lista_eventos->tipo == DEPARTURE){
+		bussy--;
+		if(queue != NULL) { 			//RESOURCES WERE FREED AND THERES ELEMENTS IN THE QUEUE 
+			delay = (lista_eventos->tempo - queue->tempo);
+			total_delay += delay;
+			histograma = histogram(delay, size, histograma, delta);
+			bussy++;
+			d = generate_event(DEPARTURE);
+			lista_eventos = adicionar(lista_eventos, DEPARTURE, lista_eventos->tempo + d);
+			queue = remover(queue);
+			lenght--;
 		}
-		lista_eventos = remover(lista_eventos);
-    	}	
+	}else{
+		i++;
+		c = generate_event(ARRIVAL);
+		total_c += c;
+		lista_eventos = adicionar(lista_eventos, ARRIVAL, lista_eventos->tempo + c); //ADD THE NEXT ARRIVAL
+		if(bussy < n_channels) { 				//AVAILABLE RESOURCES
+			bussy++;
+			d = generate_event(DEPARTURE);
+			lista_eventos = adicionar(lista_eventos, DEPARTURE,  lista_eventos->tempo + d);
+		} else if(lenght < capacity){		//CHECK IF QUEUE IS FULL
+			delayed++;
+			lenght++;
+			queue = adicionar(queue, ARRIVAL, lista_eventos->tempo);	//ADD DELAYED ELEMENT TO QUEUE WITH TIME OF ARRIVAL
+		} else blocked++;
+	}
+	lista_eventos = remover(lista_eventos);
+    }	
     total_c = total_c /(double) n_samples;
     printGraph(histograma, size);
-    printf("Estimador = %f\n", total_c);
-    printf("lambda = %lf\nn_samples = %d\ndelta = %lf\nmax_delta = %lf\n", lambda, n_samples, delta, max_delta);
+    printf("Avg Packets Blocked: 		%lf%%\n",(double)blocked/n_samples *100);
     printf("Avg Packets Delayed: 		%lf%%\n",(double)delayed/n_samples *100);
     printf("Avg Delayed Time: 	 	%lf\n",(double)total_delay/n_samples);
 

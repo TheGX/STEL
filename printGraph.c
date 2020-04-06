@@ -18,7 +18,8 @@ void printGraph(int histograma[25], int size){
 		for(int z = 0; z < size; z++){
 			if(z==0) printf("	");
 			else if(histograma[z] >= height) printf("  =   ");
-			else if(z!=0) printf("      ");
+			else if(histograma[z] >= height) printf("=	");
+			else if(z!=0) printf("	");
 		}
 		printf("\n");
 	}	 
