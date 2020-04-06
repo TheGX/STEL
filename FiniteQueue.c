@@ -45,7 +45,7 @@ int main(int argc, char const *argv[]) {
 			total_delay += delay;
 			histograma = histogram(delay, size, histograma, delta);
 			bussy++;
-			d = generate_event(DEPARTURE);
+			d = generate_event(DEPARTURE);		//GENEATE PROCESSING TIME
 			lista_eventos = adicionar(lista_eventos, DEPARTURE, lista_eventos->tempo + d);
 			queue = remover(queue);
 			lenght--;
@@ -54,15 +54,15 @@ int main(int argc, char const *argv[]) {
 		i++;
 		c = generate_event(ARRIVAL);
 		total_c += c;
-		lista_eventos = adicionar(lista_eventos, ARRIVAL, lista_eventos->tempo + c); //ADD THE NEXT ARRIVAL
-		if(bussy < n_channels) { 				//AVAILABLE RESOURCES
+		lista_eventos = adicionar(lista_eventos, ARRIVAL, lista_eventos->tempo + c); 		//ADD NEXT ARRIVAL
+		if(bussy < n_channels) { 								//RESOURCES AVAILABLE
 			bussy++;
 			d = generate_event(DEPARTURE);
 			lista_eventos = adicionar(lista_eventos, DEPARTURE,  lista_eventos->tempo + d);
-		} else if(lenght < capacity){		//CHECK IF QUEUE IS FULL
+		} else if(lenght < capacity){								//CHECK IF QUEUE IS FULL
 			delayed++;
 			lenght++;
-			queue = adicionar(queue, ARRIVAL, lista_eventos->tempo);	//ADD DELAYED ELEMENT TO QUEUE WITH TIME OF ARRIVAL
+			queue = adicionar(queue, ARRIVAL, lista_eventos->tempo);			//ADD DELAYED ELEMENT TO QUEUE WITH TIME OF ARRIVAL
 		} else blocked++;
 	}
 	lista_eventos = remover(lista_eventos);
