@@ -6,12 +6,31 @@
 #include"printGraph.c"
 
 #define	lambda 0.022f
-#define	dm 0.008f
 #define	ARRIVAL 0
 #define	DEPARTURE 1
+#define st_desv 20
+#define medium 60
 
-double generate_event(int type);
+/*return random number between zero and one */
+double generate_random();
+
+/*returns duration of the call on the general channel according to it's type*/
+double duration_of_call_general(int call_type);
+
+/*returns duration of the call in the area specific chhannel*/
+double duration_of_call_area_specific();
+
+/*returns time between calls*/
+double time_between_calls();
+
+/*returns running average delay*/
+double running_average(int n, double current_sample, double previous_avg);
+
+/*returns if a call is general or general+specific*/
+int get_type_call();
+
 int * histogram(double data, int size, int * histograma, double delta);
+
 int main(int argc, char const *argv[]) {
     
     if(argc != 4){
@@ -87,11 +106,63 @@ int main(int argc, char const *argv[]) {
     return 1;
 }
 
-double generate_event(int type){
-	double u = ((double) rand()+1)/RAND_MAX, r;
+double generate_random() {
 
-	if(type == ARRIVAL) r = -(1/lambda)*log(u);
-	else r = -dm*log(u);
+	return ((double) rand()+1)/RAND_MAX;
+}
 
-	return r;
+double time_between_calls(){
+
+	double u = generate_random(), r;
+
+	return r = -(1/lambda)*log(u);
+}
+
+
+double duration_of_call_area_specific(){
+
+	double dm=0, d=0, u=0;
+	u= generate_random();
+	dm= 150;
+	return d= 60 + (-dm)*log(u);
+}
+double duration_of_call_general(int call_type){
+
+	double dm=0, d=0, u=0;
+	double u1=0, u2=0, teta=0, r=0; // for Box-Muller
+
+	if (call_type == 0){ //general
+
+		u=generate_random();
+		dm= 120;
+		d= 60 + (-dm)*log(u); //exponential
+
+		if(d > 300) d=300;
+
+	}
+
+	else if(call_type == 1){ //general + specific
+
+		u1=generate_random();
+		u2=generate_random();
+		teta= 2*M_PI*u1;
+		r= sqrt(-2*log(u2));
+
+		/* I DUNNO THIS */
+
+		if (d>120) d=120;
+	}
+	return d;
+}
+
+double running_average(int n, double current_sample, double previous_avg){
+		return (previous_avg*(n-1))/n + current_sample/n;
+}
+
+int get_type_call(){
+
+	double p = generate_random();
+
+	if(p < 0.3) return 0;
+	else return 1;
 }
