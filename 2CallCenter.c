@@ -69,7 +69,7 @@ int main(int argc, char const *argv[]) {
 			if(general_bussy < n_general_channels) {
 				//GENERAL RESOURCES AVAILABLE 
 				general_bussy++;
-				d = duration_of_call_general(system->area);
+				d = duration_of_call_general(system->area); 
 				// d = duration_of_call_general(GENERAL);
 				system = adicionar(system, DEPARTURE, system->area, (system->tempo + d));
 			}else if(lenght < capacity) {
@@ -86,8 +86,8 @@ int main(int argc, char const *argv[]) {
 				general_bussy++;
 				delay = system->tempo - general_queue->tempo;
 				total_delay += delay;
-				// d = duration_of_call_general(GENERAL);
 				d = duration_of_call_general(general_queue->area); 
+				// d = duration_of_call_general(GENERAL); 
 				system = adicionar(system, DEPARTURE, general_queue->area, (system->tempo + d));
 				general_queue = remover(general_queue);
 				lenght--;
@@ -130,10 +130,9 @@ int main(int argc, char const *argv[]) {
 		system = remover(system);
     }	
     // printGraph(histograma, size);
-    printf("Avg Packets Blocked: 		%lf%%\n",(double)blocked/n_samples *100);
-    printf("Avg Packets Delayed: 		%lf%%\n",(double)delayed/n_samples *100);
-    printf("Avg Delayed Time: 	 	%lf\n",(double)total_delay/n_samples);
-    printf("Specific call avg: 	 	%lf\n",(double)specific_call_sum/(aux_n_specific));
+    printf("Avg Packets Blocked:\t %lf%%\n",(double)blocked/n_samples *100);
+    printf("Avg Packets Delayed:\t %lf%%\n",(double)delayed/n_samples *100);
+    printf("Avg Delayed Time:\t %lf\n",(double)total_delay/n_samples);
 
     return 1;
 }
@@ -161,10 +160,10 @@ double duration_of_call_general(int area){
 	if(area == GENERAL) {
 		//exponential avg 120, min 60 and max 300
 		double u =generate_random();
-		r =(double) 60 -dm*log(u);
-		if( r > (double) 300) r = (double) 300;
+		// r =(double) 60 -dm*log(u);
+		// if( r > (double) 300) r = (double) 300;
 		
-		// r =(double) -dm*log(u);
+		r =(double) -dm*log(u);
 	} else {
 		//gaus avg 60, std 20, min 30, max 120
 		double u2=generate_random(), u=generate_random();
