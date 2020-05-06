@@ -61,6 +61,7 @@ int main(int argc, char const *argv[]) {
 		if(system ->tipo == ARRIVAL){
 			//GENERATE NEXT ARRIVAL
 			area = get_call_area();
+			i++;
 			d = time_between_calls();
 			system = adicionar(system, ARRIVAL, area, (system->tempo + d));
 			
@@ -69,6 +70,7 @@ int main(int argc, char const *argv[]) {
 				//GENERAL RESOURCES AVAILABLE 
 				general_bussy++;
 				d = duration_of_call_general(system->area);
+				// d = duration_of_call_general(GENERAL);
 				system = adicionar(system, DEPARTURE, system->area, (system->tempo + d));
 			}else if(lenght < capacity) {
 				//QUEUE EVENT
@@ -76,7 +78,6 @@ int main(int argc, char const *argv[]) {
 				lenght++;
 				delayed++;
 			} else blocked++; //QUEUE FULL -> BLOCKED
-			i++;
 		}
 		else { 	//GENERAL DEPARTURE
 			general_bussy--;
@@ -85,12 +86,13 @@ int main(int argc, char const *argv[]) {
 				general_bussy++;
 				delay = system->tempo - general_queue->tempo;
 				total_delay += delay;
+				// d = duration_of_call_general(GENERAL);
 				d = duration_of_call_general(general_queue->area); 
 				system = adicionar(system, DEPARTURE, general_queue->area, (system->tempo + d));
 				general_queue = remover(general_queue);
 				lenght--;
 			}
-
+			
 			if(system->area == SPECIFIC) {
 				aux_n_specific++;
 				//PROCESS EVENT THAT ARRIVED
@@ -122,6 +124,7 @@ int main(int argc, char const *argv[]) {
 				}
 				specific = remover(specific);
 			}
+			
 		}
 		
 		system = remover(system);
@@ -144,7 +147,7 @@ int get_call_area(){
 
 	double p = generate_random();
 	int x;
-	if (p < 0.3) x = GENERAL; 
+	if (p <= 0.3) x = GENERAL; 
 	else x = SPECIFIC;
 	return x;
 }
@@ -153,20 +156,23 @@ double generate_random() {
 }
 
 double duration_of_call_general(int area){
-	double r, u=generate_random();
+	double r;
 
 	if(area == GENERAL) {
 		//exponential avg 120, min 60 and max 300
+		double u =generate_random();
 		r =(double) 60 -dm*log(u);
 		if( r > (double) 300) r = (double) 300;
+		
+		// r =(double) -dm*log(u);
 	} else {
 		//gaus avg 60, std 20, min 30, max 120
-		double u2=generate_random();
+		double u2=generate_random(), u=generate_random();
 		double teta = 2*M_PI*u;
-		r = ((double) 30 + sqrt(-2*log(u2))*cos(teta));
-		if( r > (double) 120) r = (double) 120;
+		r = (sqrt(-2*log(u2))*cos(teta));
 
-		r = (double) (r*st_desv) + mean;
+		r = 30+ ((r*st_desv) + mean);
+		if( r > (double) 120) r = (double) 120;
 	}
 
 	return r;
