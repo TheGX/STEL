@@ -4,6 +4,7 @@
 // Definição da estrutura da lista
 typedef struct{
 	int tipo;
+	int area;
 	double tempo;
 	struct lista * proximo;
 } lista;
@@ -18,7 +19,7 @@ lista * remover (lista * apontador)
 }
 
 // Função que adiciona novo elemento à lista, ordenando a mesma por tempo
-lista * adicionar (lista * apontador, int n_tipo, double n_tempo)
+lista * adicionar (lista * apontador, int n_tipo, int area, double n_tempo)
 {
 	lista * lap = apontador;
 	lista * ap_aux, * ap_next;
@@ -27,6 +28,7 @@ lista * adicionar (lista * apontador, int n_tipo, double n_tempo)
 		apontador = (lista *) malloc(sizeof (lista));
 		apontador -> proximo = NULL;
 		apontador -> tipo = n_tipo;
+		apontador -> area = area;
 		apontador -> tempo = n_tempo;
 		return apontador;
 	}
@@ -35,6 +37,7 @@ lista * adicionar (lista * apontador, int n_tipo, double n_tempo)
 		if (apontador->tempo > n_tempo) {
 	        ap_aux = (lista *) malloc(sizeof (lista));
 	        ap_aux -> tipo = n_tipo;
+	        ap_aux -> area = area;
             ap_aux -> tempo = n_tempo;
             ap_aux -> proximo = (struct lista *) apontador;
             return ap_aux;
@@ -56,6 +59,7 @@ lista * adicionar (lista * apontador, int n_tipo, double n_tempo)
 		else
 			apontador -> proximo = NULL;
 		apontador -> tipo = n_tipo;
+		apontador -> area = area;
 		apontador -> tempo = n_tempo;
 		return lap;
 	}
@@ -70,7 +74,7 @@ void imprimir (lista * apontador)
 	{
 		while(apontador != NULL)
 		{
-			printf("Tipo=%d\tTempo=%lf\n", apontador -> tipo, apontador -> tempo);
+			printf("Tipo=%d\tArea=%d\tTempo=%lf\n", apontador -> tipo, apontador -> area, apontador -> tempo);
 			apontador = (lista *)apontador -> proximo;
 		}
 	}
