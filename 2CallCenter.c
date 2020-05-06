@@ -97,31 +97,34 @@ int main(int argc, char const *argv[]) {
 				//PROCESS EVENT THAT ARRIVED
 
 				specific = adicionar(specific, ARRIVAL, SPECIFIC, system->tempo);
-				if(specific->tipo == DEPARTURE){
-					specific_bussy--;
+				while(specific->tempo < system->tempo) {
 
-					// PROCESS QUEUED EVENTS
-					if(specific_queue != NULL){
-						specific_bussy++;
-						specific_delay = (specific->tempo - specific_queue->tempo);
-						total_specific_delay += specific_delay;
-						d = duration_of_call_specific();
-						specific_queue = remover(specific_queue); 
-						specific = adicionar(specific, DEPARTURE, SPECIFIC, (specific->tempo + d));
-					}
-				} else {
-					if(specific_bussy < n_specific_channels) {
-						//SPECIFIC RESOURCES AVAILABLE
-						specific_bussy++;
-						d = duration_of_call_specific(); 
-						specific = adicionar(specific, DEPARTURE, SPECIFIC, (specific->tempo + d));
+					if(specific->tipo == DEPARTURE){
+						specific_bussy--;
+
+						// PROCESS QUEUED EVENTS
+						if(specific_queue != NULL){
+							specific_bussy++;
+							specific_delay = (specific->tempo - specific_queue->tempo);
+							total_specific_delay += specific_delay;
+							d = duration_of_call_specific();
+							specific_queue = remover(specific_queue); 
+							specific = adicionar(specific, DEPARTURE, SPECIFIC, (specific->tempo + d));
+						}
 					} else {
-						//QUEUE SPECIFIC EVENT
-						specific_queue = adicionar(specific_queue, ARRIVAL, SPECIFIC, specific->tempo);
-						specific_delayed++;
+						if(specific_bussy < n_specific_channels) {
+							//SPECIFIC RESOURCES AVAILABLE
+							specific_bussy++;
+							d = duration_of_call_specific(); 
+							specific = adicionar(specific, DEPARTURE, SPECIFIC, (specific->tempo + d));
+						} else {
+							//QUEUE SPECIFIC EVENT
+							specific_queue = adicionar(specific_queue, ARRIVAL, SPECIFIC, specific->tempo);
+							specific_delayed++;
+						}
 					}
+					specific = remover(specific);
 				}
-				specific = remover(specific);
 			}
 			
 		}
