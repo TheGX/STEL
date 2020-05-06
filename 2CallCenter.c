@@ -51,8 +51,9 @@ int main(int argc, char const *argv[]) {
     srand(time(0));
     int size = (max_delta/delta);
     int delayed=0, general_bussy=0, specific_bussy=0, area = 0, aux_n_specific=0;
-    double d=0, c = 0, total_delay=0; 
-    double delay=0, specific_call_sum=0; 
+	int n_specific = 0, specific_delayed=0;
+    double d=0, c = 0, total_delay=0, total_specific_delay=0; 
+    double delay=0, specific_delay=0; 
     // int *histograma = (int *)malloc(size*sizeof(int));
     int i=0; 
     while(i < n_samples) {
@@ -70,7 +71,6 @@ int main(int argc, char const *argv[]) {
 				//GENERAL RESOURCES AVAILABLE 
 				general_bussy++;
 				d = duration_of_call_general(system->area); 
-				// d = duration_of_call_general(GENERAL);
 				system = adicionar(system, DEPARTURE, system->area, (system->tempo + d));
 			}else if(lenght < capacity) {
 				//QUEUE EVENT
@@ -87,39 +87,38 @@ int main(int argc, char const *argv[]) {
 				delay = system->tempo - general_queue->tempo;
 				total_delay += delay;
 				d = duration_of_call_general(general_queue->area); 
-				// d = duration_of_call_general(GENERAL); 
 				system = adicionar(system, DEPARTURE, general_queue->area, (system->tempo + d));
 				general_queue = remover(general_queue);
 				lenght--;
 			}
 			
 			if(system->area == SPECIFIC) {
-				aux_n_specific++;
+				n_specific++;
 				//PROCESS EVENT THAT ARRIVED
-				
+
 				specific = adicionar(specific, ARRIVAL, SPECIFIC, system->tempo);
-				if(specific_bussy < n_specific_channels) {
-					//SPECIFIC RESOURCES AVAILABLE
-					specific_bussy++;
-					d = duration_of_call_specific(); 
-					specific_call_sum += d;
-					specific = adicionar(specific, DEPARTURE, SPECIFIC, (system->tempo + d));
-				} else {
-					//QUEUE SPECIFIC EVENT
-					specific_queue = adicionar(specific_queue, ARRIVAL, SPECIFIC, system->tempo);
-				}
-				
 				if(specific->tipo == DEPARTURE){
 					specific_bussy--;
 
 					// PROCESS QUEUED EVENTS
 					if(specific_queue != NULL){
 						specific_bussy++;
-						//TODO calculate specific delay (specific->tempo-specific_queue->tempo)here
+						specific_delay = (specific->tempo - specific_queue->tempo);
+						total_specific_delay += specific_delay;
 						d = duration_of_call_specific();
-						specific_call_sum += d;
 						specific_queue = remover(specific_queue); 
 						specific = adicionar(specific, DEPARTURE, SPECIFIC, (specific->tempo + d));
+					}
+				} else {
+					if(specific_bussy < n_specific_channels) {
+						//SPECIFIC RESOURCES AVAILABLE
+						specific_bussy++;
+						d = duration_of_call_specific(); 
+						specific = adicionar(specific, DEPARTURE, SPECIFIC, (specific->tempo + d));
+					} else {
+						//QUEUE SPECIFIC EVENT
+						specific_queue = adicionar(specific_queue, ARRIVAL, SPECIFIC, specific->tempo);
+						specific_delayed++;
 					}
 				}
 				specific = remover(specific);
@@ -132,7 +131,11 @@ int main(int argc, char const *argv[]) {
     // printGraph(histograma, size);
     printf("Avg Packets Blocked:\t %lf%%\n",(double)blocked/n_samples *100);
     printf("Avg Packets Delayed:\t %lf%%\n",(double)delayed/n_samples *100);
-    printf("Avg Delayed Time:\t %lf\n",(double)total_delay/n_samples);
+    printf("Avg Delayed Time:\t %lf\n",(double)total_delay/delayed);
+    printf("Avg Spec Delayed:\t %lf%%\n",(double)specific_delayed/n_specific *100);
+    printf("Avg Spec Delayed Time:\t %lf\n", (double)total_specific_delay/specific_delayed);
+	printf("\nN SPECIFIC CALLS:\t\t\t %d\n", n_specific);
+	printf("N SPECIFIC CALLS DELAYED:\t\t %d\n", specific_delayed);
 
     return 1;
 }
@@ -160,10 +163,8 @@ double duration_of_call_general(int area){
 	if(area == GENERAL) {
 		//exponential avg 120, min 60 and max 300
 		double u =generate_random();
-		// r =(double) 60 -dm*log(u);
-		// if( r > (double) 300) r = (double) 300;
-		
-		r =(double) -dm*log(u);
+		r =(double) 60 -dm*log(u);
+		if( r > (double) 300) r = (double) 300;		
 	} else {
 		//gaus avg 60, std 20, min 30, max 120
 		double u2=generate_random(), u=generate_random();
