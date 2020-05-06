@@ -134,8 +134,6 @@ int main(int argc, char const *argv[]) {
     printf("Avg Delayed Time:\t %lf\n",(double)total_delay/delayed);
     printf("Avg Spec Delayed:\t %lf%%\n",(double)specific_delayed/n_specific *100);
     printf("Avg Spec Delayed Time:\t %lf\n", (double)total_specific_delay/specific_delayed);
-	printf("\nN SPECIFIC CALLS:\t\t\t %d\n", n_specific);
-	printf("N SPECIFIC CALLS DELAYED:\t\t %d\n", specific_delayed);
 
     return 1;
 }
