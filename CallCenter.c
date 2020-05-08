@@ -36,13 +36,17 @@ int main(int argc, char const *argv[]) {
     int size = (max_delta/delta);
     int delayed=0, general_bussy=0, specific_bussy=0, area = 0;
 	int n_specific = 0, specific_delayed=0, error_count=0;
-    double d=0, total_delay=0, total_specific_delay=0, rel_error_sum=0, abs_error_sum=0; 
-    double delay=0, specific_delay=0, avg_specific_total_delay=0; 
+	//STATISTIC VARIABLES
+	double d=0, total_delay=0, total_specific_delay=0, rel_error_sum=0, abs_error_sum=0; 
+    double delay=0, specific_delay=0; 
 	double avg=0, abs_error=0, rel_error=0;
+	//Dynamically growing Array for the "time spend in queues" delay
 	Array Array_delays;
 	initArray(&Array_delays,10);
+
     int *general_histograma = (int *)malloc(size*sizeof(int));
     int *prediction_histograma = (int *)malloc(size*sizeof(int));
+
     int i=0; 
     while(i < n_samples) {
     	if(i == 0) system = adicionar(system, ARRIVAL, SPECIFIC, 0, 0);
@@ -77,11 +81,11 @@ int main(int argc, char const *argv[]) {
 				general_queue->suffered_delay +=delay;
 				total_delay += delay;
 
-				//ADD PREVIOUS (i-1) PREDICTION ERROR
 				abs_error = fabs(delay-avg);
 				error_count++;
 				rel_error_sum += rel_error;
 				abs_error_sum += abs_error;
+				//ADD PREVIOUS (i-1) PREDICTION ERROR
 				prediction_histograma = histogram(abs_error, size, prediction_histograma, delta);
 				//COMPUTE RUNNING AVG FOR CURRENT I
 				avg = running_average(error_count, delay, avg);
@@ -111,7 +115,6 @@ int main(int argc, char const *argv[]) {
 							total_specific_delay += specific_delay;
 
 							d = duration_of_call_specific();
-							avg_specific_total_delay+= specific_queue->suffered_delay; 
 							insertArray(&Array_delays, specific_queue->suffered_delay);
 							specific = adicionar(specific, DEPARTURE, SPECIFIC, specific_queue->suffered_delay, (specific->tempo + d));
 							specific_queue = remover(specific_queue); 
@@ -121,7 +124,6 @@ int main(int argc, char const *argv[]) {
 							//SPECIFIC RESOURCES AVAILABLE
 							specific_bussy++;
 							d = duration_of_call_specific();
-							avg_specific_total_delay+= specific->suffered_delay;
 							insertArray(&Array_delays, specific->suffered_delay);
 							specific = adicionar(specific, DEPARTURE, SPECIFIC, specific->suffered_delay, (specific->tempo + d));
 						} else {
@@ -160,11 +162,5 @@ int main(int argc, char const *argv[]) {
 	double interv_confi = limite_confi*erro_padrao_media;
 	printf("\nConfidance Interval, with limite of 90%% %lf\n", interv_confi);
 
-	// FILE *f =fopen( "Delay.txt", "a");
-	// for (int i = 0; i < 25; i++)
-	// {
-	// 	fprintf(f, "%d\n", prediction_histograma[i]);
-	// }
-	// fclose(f);
     return 1;
 }
