@@ -5,7 +5,7 @@
 #include"prototipo.c"
 #include"printGraph.c"
 
-#define	lambda 0.0347f
+#define	lambda 0.022f
 #define	dm 120.0f
 #define	ARRIVAL 0
 #define	DEPARTURE 1
@@ -13,26 +13,6 @@
 #define	GENERAL 1
 #define st_desv 20
 #define mean 60
-
-/*return random number between zero and one */
-double generate_random();
-double media(double* values, int n);
-/*returns if a call is general or general+specific*/
-int get_call_area();
-
-/*returns duration of the call in the area specific chhannel*/
-double duration_of_call_general(int area);
-
-/*returns duration of the call in the area specific chhannel*/
-double duration_of_call_specific();
-
-/*returns time between calls*/
-double time_between_calls();
-double stddev(double* values, int n, double average);
-
-/*returns running average delay*/
-double running_average(int n, double current_sample, double previous_avg);
-int * histogram(double data, int size, int * histograma, double delta);
 
 int main(int argc, char const *argv[]) {
     
@@ -85,8 +65,7 @@ int main(int argc, char const *argv[]) {
 				general_queue = adicionar(general_queue, ARRIVAL, system->area, 0, system->tempo);
 				lenght++;
 				delayed++;
-				// avg = running_average(delayed, delay, avg);
-				// printf("Sample %d - Running Avg: %lf\n", i, avg);
+				printf("Running average of sample %d\t%lf\n", i, avg);
 			} else blocked++; //QUEUE FULL -> BLOCKED
 		}
 		else { 	//GENERAL DEPARTURE
@@ -115,11 +94,10 @@ int main(int argc, char const *argv[]) {
 			}
 			
 			if(system->area == SPECIFIC) {
-				int i =n_specific;
 				n_specific++;
 				//PROCESS EVENT THAT ARRIVED
-
 				specific = adicionar(specific, ARRIVAL, SPECIFIC, system->suffered_delay, system->tempo);
+				//	MAKE SURE SPECIFIC SYSTEM IS CAUGHT UP TO GENERAL SYSTEM 
 				while(specific->tempo < system->tempo && n_specific_channels > 0 && specific != NULL) {
 
 					if(specific->tipo == DEPARTURE){
@@ -133,8 +111,6 @@ int main(int argc, char const *argv[]) {
 							total_specific_delay += specific_delay;
 
 							d = duration_of_call_specific();
-							// test[i] = specific->suffered_delay; 
-							i++;
 							avg_specific_total_delay+= specific_queue->suffered_delay; 
 							insertArray(&Array_delays, specific_queue->suffered_delay);
 							specific = adicionar(specific, DEPARTURE, SPECIFIC, specific_queue->suffered_delay, (specific->tempo + d));
@@ -145,8 +121,6 @@ int main(int argc, char const *argv[]) {
 							//SPECIFIC RESOURCES AVAILABLE
 							specific_bussy++;
 							d = duration_of_call_specific();
-							// test[i] = specific->suffered_delay; 
-							i++;
 							avg_specific_total_delay+= specific->suffered_delay;
 							insertArray(&Array_delays, specific->suffered_delay);
 							specific = adicionar(specific, DEPARTURE, SPECIFIC, specific->suffered_delay, (specific->tempo + d));
@@ -184,7 +158,7 @@ int main(int argc, char const *argv[]) {
 
 	double limite_confi = 1.65;
 	double interv_confi = limite_confi*erro_padrao_media;
-	printf("\nIntervalo confiança, com limite 90%% %lf\n", interv_confi);
+	printf("\nConfidance Interval, with limite of 90%% %lf\n", interv_confi);
 
 	// FILE *f =fopen( "Delay.txt", "a");
 	// for (int i = 0; i < 25; i++)
@@ -193,71 +167,4 @@ int main(int argc, char const *argv[]) {
 	// }
 	// fclose(f);
     return 1;
-}
-
-double time_between_calls(){
-	double u = generate_random(), r;
-	return r = -(1/lambda)*log(u);
-}
-
-int get_call_area(){
-
-	double p = generate_random();
-	int x;
-	if (p <= 0.3) x = GENERAL; 
-	else x = SPECIFIC;
-	return x;
-}
-double generate_random() {
-	return ((double) rand()+1)/RAND_MAX;
-}
-
-double duration_of_call_general(int area){
-	double r;
-
-	if(area == GENERAL) {
-		//exponential avg 120, min 60 and max 300
-		double u =generate_random();
-		r =(double) 60 -dm*log(u);
-		if( r > (double) 300) r = (double) 300;		
-	} else {
-		//gaus avg 60, std 20, min 30, max 120
-		double u2=generate_random(), u=generate_random();
-		double teta = 2*M_PI*u;
-		r = (sqrt(-2*log(u2))*cos(teta));
-
-		r = 30+ ((r*st_desv) + mean);
-		if( r > (double) 120) r = (double) 120;
-	}
-
-	return r;
-}
-
-double duration_of_call_specific(){
-	double u = generate_random(), r, d =150.0;
-
-	return (double) (r = 60 -d*log(u));
-}
-
-double running_average(int n, double current_sample, double previous_avg){
-		return (previous_avg*(n-1) + current_sample)/n;
-}
-
-double media(double* values, int n)
-{
-    int i;
-    double s = 0;
- 
-    for ( i = 0; i < n; i++ )
-        s += values[i];
-    return s / n;
-}
-double stddev(double* values, int n, double average)
-{
-    int i;
-    double s = 0;
- 
-    for ( i = 0; i < n; i++ )
-        s += (values[i] - average) * (values[i] - average);
-    return sqrt(s / (n - 1));
 }
